@@ -2,6 +2,7 @@
 
 import { auth, currentUser } from "@clerk/nextjs/server"
 import prisma from '@/lib/prisma'
+import { revalidatePath } from "next/cache";
 
 export async function syncUser(){
   try {
@@ -64,4 +65,86 @@ export async function getDbUserId() {
   if (!user) throw new Error("User not found");
 
   return user.id;
+}
+
+export async function getRandomUsersToFollow() {
+  try {
+    const userId = await getDbUserId()
+    const randomUsers = await prisma.user.findMany({
+      where: {
+        AND: [
+          {NOT: { id: userId }}, // exclude current user
+          {NOT: { followers: { some: { followerId: userId}}}}, // exclude followers of current user
+        ]
+      },
+      select: {
+        id: true,
+        name: true,
+        username: true,
+        image: true,
+        _count: {
+          select: {
+            followers: true
+          }
+        }
+      },
+      take: 3
+    })
+
+    return randomUsers
+  } catch (error) {
+    console.log("Error fetching random users", error)
+    return []
+  }
+}
+
+export async function toggleFollow(targetUserId: string){
+  try {
+    const currentUserId = await getDbUserId();
+    if(currentUserId === targetUserId) throw new Error("You cannot follow yourself") 
+    
+    const existingFollow = await prisma.follows.findUnique({
+      where: {
+        followerId_followingId: {
+          followerId: currentUserId,
+          followingId: targetUserId
+        }
+      }
+    })
+
+    if(existingFollow) {
+      // unfollow
+      await prisma.follows.delete({
+        where: {
+          followerId_followingId: {
+            followerId: currentUserId,
+            followingId: targetUserId
+          }
+        }
+      })
+    } else {
+      // follow
+      await prisma.$transaction([
+        prisma.follows.create({
+          data: {
+            followerId: currentUserId,
+            followingId: targetUserId
+          }
+        }),
+
+        prisma.notification.create({
+          data: {
+            type: 'FOLLOW',
+            userId: targetUserId,
+            creatorId: currentUserId
+          }
+        })
+      ])
+    }
+    revalidatePath('/')
+    return { success: true}
+  } catch (error) {
+    console.log("Error in toggleFollow", error)
+    return { success: false, error}
+  }
 }
