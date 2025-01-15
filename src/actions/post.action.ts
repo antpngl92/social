@@ -9,7 +9,7 @@ export async function createPost(content: string, imageUrl: string) {
     const userId = await getDbUserId();
     if(!userId) return
     
-    const post = await prisma.Post.create({
+    const post = await prisma.post.create({
       data: {
         content: content,
         image: imageUrl,
