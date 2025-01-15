@@ -37,7 +37,8 @@ function Notifications() {
 
         const unreadIds = data.filter((n: Notification) => !n.read).map((n: Notification) => n.id)
         if(unreadIds.length > 0) await markNotificationsAsRead(unreadIds)
-      } catch (error) {
+      } catch (error: unknown) {
+        console.log(error)
         toast.error("Failed to fetch notifications")
       } finally {
         setIsLoading(false)
