@@ -6,7 +6,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Avatar, AvatarImage } from '@/components/ui/avatar'
 import { Card, CardContent } from '@/components/ui/card'
 import { ImageIcon, Loader2Icon, SendIcon } from 'lucide-react'
-import createPost from '@/actions/post.action'
+import { createPost } from '@/actions/post.action'
 import toast from 'react-hot-toast'
 
 function CreatePost() {
@@ -22,7 +22,7 @@ function CreatePost() {
     setIsPosting(true)
     try {
       const result = await createPost(content, imageUrl)
-      if(result.success){
+      if(result?.success){
         setContent("")
         setImageUrl("")
         setShowImageUpload(false)
