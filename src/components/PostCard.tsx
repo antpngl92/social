@@ -12,46 +12,13 @@ import { Button } from './ui/button'
 import { HeartIcon, LogInIcon, MessageCircleIcon, SendIcon } from 'lucide-react'
 import { Textarea } from './ui/textarea'
 
-interface Post {
-  id: string
-  createdAt: string
-  content: string
-  image: string
-  _count: {
-    likes: number,
-    comments: number,
-  },
-  author: {
-    image: string | null, 
-    username: string;
-    name: string;
-    id: string
-  }
-  comments: {
-    id: string
-    content: string
-    authorId: string
-    postId: string
-    createdAt: string
-    updatedAt: string
-    author: {
-      id: number;
-      username: string;
-      image: string | null
-      name: string
-    },
-  }[]
-  likes: {
-    userId: string
-  }[]
-}
+type Posts = Awaited<ReturnType<typeof getPosts>>;
+type Post = Posts[number];
 
 interface PostCardProps {
   post: Post
   dbUserId: string
 }
-
-
 
 function PostCard({ post, dbUserId }: PostCardProps) {
   const { user } = useUser()
@@ -73,6 +40,7 @@ function PostCard({ post, dbUserId }: PostCardProps) {
       await toggleLike(post.id)
 
     } catch (error) {
+      console.log(error)
       setOptimisticLikes(post._count.likes)
       setUserHasLikedPost(post.likes.some(like => like.userId === dbUserId))
 
@@ -81,14 +49,19 @@ function PostCard({ post, dbUserId }: PostCardProps) {
 
     }
   }
+
   const handleAddComment = async () => {
     if(!newComment.trim() || isCommenting) return;
 
     try {
       setIsCommenting(true);
       const result =  await createComment(post.id, newComment);
-      setNewComment("")
+       if (result?.success) {
+        toast.success("Comment posted successfully");
+        setNewComment("");
+      }
     } catch (error) {
+      console.log(error)
       toast.error("Failed to add comment")
     } finally {
       setIsCommenting(false)
@@ -102,6 +75,7 @@ function PostCard({ post, dbUserId }: PostCardProps) {
       if(result.success) toast.success("Post deleted successfully");
       else throw new Error(result.error)
     } catch (error) {
+      console.log(error)
       toast.error("Failed to delete post");
     } finally {
       setIsDeleting(false)
