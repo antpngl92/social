@@ -25,7 +25,7 @@ const getNotificationIcon = (type: string) => {
   }
 };
 
-function Notifications() {
+function NotificationsPage() {
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [isLoading, setIsLoading] = useState(true)
   
@@ -128,4 +128,4 @@ function Notifications() {
   );
 }
 
-export default Notifications
+export default NotificationsPage
