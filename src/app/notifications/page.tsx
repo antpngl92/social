@@ -98,6 +98,7 @@ function NotificationsPage() {
                           <div className="text-sm text-muted-foreground rounded-md p-2 bg-muted/30 mt-2">
                             <p>{notification.post.content}</p>
                             {notification.post.image && (
+                              // eslint-disable-next-line @next/next/no-img-element
                               <img
                                 src={notification.post.image}
                                 alt="Post content"

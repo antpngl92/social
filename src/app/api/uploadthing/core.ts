@@ -18,6 +18,7 @@ export const ourFileRouter = {
     // whatever is returned here is accessible in onUploadComplete as `metadata`
     return { userId };
   })
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   .onUploadComplete(async ({ metadata, file }) => {
     try {
       return { fileUrl: file.url };
