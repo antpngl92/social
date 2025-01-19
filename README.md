@@ -30,3 +30,5 @@ UPLOADTHING_TOKEN=
 ```shell
 npm run dev
 ```
+
+Demo: https://social-six-tau.vercel.app/
