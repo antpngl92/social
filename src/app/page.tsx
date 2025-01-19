@@ -15,7 +15,7 @@ export default async function Home() {
       <div className="lg:col-span-6">
         { user && <CreatePost /> }
         <div className='space-y-6'>
-          {posts.map(post => <PostCard key={post.id} post={post} dbUserId={dbUserId}/>)}
+          {dbUserId && posts.map(post => <PostCard key={post.id} post={post} dbUserId={dbUserId}/>)}
         </div>
       </div>
 
