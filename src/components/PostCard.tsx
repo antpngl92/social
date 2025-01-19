@@ -18,7 +18,7 @@ type Post = Posts[number];
 
 interface PostCardProps {
   post: Post
-  dbUserId: string
+  dbUserId: string | null
 }
 
 function PostCard({ post, dbUserId }: PostCardProps) {
